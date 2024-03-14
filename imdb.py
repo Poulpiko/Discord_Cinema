@@ -1,4 +1,4 @@
-import json, requests, random, time
+import json, requests, random, time, dotenv
 
 def yes_or_no(question):
     while "the answer is invalid":
@@ -7,12 +7,14 @@ def yes_or_no(question):
             return True
         if reply[0] == 'n':
             return False
+        
+
 
 HOST = "imdb8.p.rapidapi.com"
-KEY = "49a08fa856msh320c8e0b5b9498bp1d8ca6jsn868a2a70db5f"
+KEY = dotenv.dotenv_values('./keys.env').get('IMDB_API_KEY')
 url = "https://imdb8.p.rapidapi.com/title/find"
-bad_file = str("G:\Mon Drive\Codes\Autres\IMDB\BAD.txt")
-movies_file = str("G:\Mon Drive\Codes\Autres\IMDB\MOVIES.txt")
+bad_file = str(".\BAD.txt")
+movies_file = str(".\MOVIES.txt")
 
 do = 0
 random.seed(time.process_time())
@@ -38,8 +40,8 @@ if __name__ == "__main__":
 
       if do == 1:
         index = 0
-        #search = str(input("\nEnter the movie name to search ('c' to cancel): "))
-        search = open(str("G:\Mon Drive\Codes\Autres\IMDB\message.txt")).read() #
+        search = str(input("\nEnter the movie name to search ('c' to cancel): "))
+        #search = open(str("G:\Mon Drive\Codes\Autres\IMDB\message.txt")).read() #
 
         if search == "c":
           movies = []
@@ -53,6 +55,8 @@ if __name__ == "__main__":
           querystring = {"q":search}
           time.sleep(1)
           response = requests.request("GET", url, headers=headers, params=querystring)
+
+          #print(json.loads(response.text))
 
           if(response.status_code == 200):
               data = json.loads(response.text)
@@ -73,7 +77,7 @@ if __name__ == "__main__":
                     movie_year = str(x["year"])
                     #movie_actor = str(x["principals"]["name"])
 
-                    if index < 1: # 10
+                    if index < 10: # 1
                       print(" " + str(index+1) + "/")
                       print("Movie:\t" + movie_title + " (" + movie_year + ")")
                       print("URL:\thttps://www.imdb.com" + movie_id)
@@ -85,7 +89,7 @@ if __name__ == "__main__":
                   except Exception:
                     continue
 
-              correct = 1 #int(input("Select the desired movie ('0' to cancel): "))
+              correct = int(input("Select the desired movie ('0' to cancel): "))
 
               if correct == 0:
                 movies = []
@@ -100,6 +104,13 @@ if __name__ == "__main__":
               for x in lines:
                 file.write(x + "\n")
               file.close()
+
+              with open(movies_file, 'r') as file:
+                lines = file.readlines()
+                unique_lines = list(set(lines))
+
+              with open(movies_file, 'w') as file:
+                file.writelines(unique_lines)
 
               print(movies[correct-1] + " added !")
               movies = []
@@ -142,6 +153,13 @@ if __name__ == "__main__":
         for x in lines2:
             file.write(x + "\n")
         file.close()
+
+        with open(movies_file, 'r') as file:
+          lines = file.readlines()
+          unique_lines = list(set(lines))
+
+        with open(movies_file, 'w') as file:
+          file.writelines(unique_lines)        
 
       if do == 3:
         row = 0
@@ -218,6 +236,13 @@ if __name__ == "__main__":
           else:
             file.write(x + "\n")
         file.close()
+
+        with open(movies_file, 'r') as file:
+          lines = file.readlines()
+          unique_lines = list(set(lines))
+
+        with open(movies_file, 'w') as file:
+          file.writelines(unique_lines)        
 
       if do != 6 : time.sleep(1)
 
